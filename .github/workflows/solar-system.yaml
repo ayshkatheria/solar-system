@@ -47,7 +47,7 @@ jobs:
 
         - name: Archive Test Results
           if: always()
-          uses: actions/upload-artifact@v3
+          uses: actions/upload-artifact@v4
           with:
             name: Mocha-Test-Results
             path: test-results.xml      
@@ -138,4 +138,3 @@ jobs:
           tags: |
              ${{vars.DOCKERHUB_USERNAME}}/solar-system:${{github.sha}}
              ghcr.io/${{github.repository_owner}}/solar-system:${{github.sha}}
-             
