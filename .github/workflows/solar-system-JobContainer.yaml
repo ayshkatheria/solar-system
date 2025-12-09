@@ -12,7 +12,7 @@ jobs:
     name: Unit Testing
     runs-on: ubuntu-latest
     container:
-        image: node:20
+        image: node:19
     
     services:
         mongo:
