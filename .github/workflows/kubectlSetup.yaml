@@ -6,24 +6,42 @@ on:
     branches:
         - main
         - feature/*
+
+env:
+    KUBECONFIG: ${{ github.workspace }}/kubeconfig
+
 jobs:
     kubectl-setup:
         name: setup jon
         runs-on: ubuntu-latest
         steps:
-            - name: Install kubectl
-              uses: azure/setup-kubectl@v3
-              with:
-                version: v1.29.0
+            
+             - name: Setup kubeconfig
+               run: |
+                 cat << 'EOF' > $KUBECONFIG
+                 ${{ secrets.K8S_KUBECONFIG }}
+                 EOF
+                 sed -i 's#https://controlplane:6443#https://127.0.0.1:6443#' $KUBECONFIG
+                 sed -i 's#https://172.31.35.167:6443#https://127.0.0.1:6443#' $KUBECONFIG || true
 
-            - name: Set up kubeconfig
-              uses: azure/k8s-set-context@v4
-              with:
-                 method: kubeconfig
-                 kubeconfig: ${{secrets.KUBECONFIG_B64}}
+             - name: Add SSH key
+               run: |
+                 mkdir -p ~/.ssh
+                 echo "${{ secrets.BASTION_SSH_KEY }}" > ~/.ssh/id_rsa
+                 chmod 600 ~/.ssh/id_rsa
+                 ssh-keyscan -H "${{ secrets.BASTION_HOST }}" >> ~/.ssh/known_hosts
 
-            - name: Verify cluster access
-              run: kubectl get nodes
+             - name: Start SSH tunnel to K8s API
+               run: |
+                  ssh -f -N \
+                  -o StrictHostKeyChecking=no \
+                  -L 6443:127.0.0.1:6443 \
+                  "${{ secrets.BASTION_USER }}@${{ secrets.BASTION_HOST }}"
+
+             - name: Verify cluster access
+               run: kubectl get nodes
+
+
 
 
 
