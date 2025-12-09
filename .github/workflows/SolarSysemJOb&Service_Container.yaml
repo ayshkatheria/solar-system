@@ -32,3 +32,10 @@ jobs:
                MONGO_URI: 'mongodb://mongo:27017/superData'
                MONGO_USERNAME: non-prod-user
                MONGO_PASSWORD: non-prod-password   
+
+        - name: Archive Test Results
+          if: always()
+          uses: actions/upload-artifact@v4
+          with:
+            name: Mocha-Test-Results-${{ github.run_id }}
+            path: test-results.xml      
