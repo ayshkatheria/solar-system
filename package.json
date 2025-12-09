@@ -1,5 +1,6 @@
 {
-  "name": "@ayshkatheria/solar-system",
+  "name": Solar System",
+ // "name": "@ayshkatheria/solar-system",
   "version": "6.7.6",
   "author": "Siddharth Barahalikar <barahalikar.siddharth@gmail.com>",
   "homepage": "https://www.linkedin.com/in/barahalikar-siddharth/",
@@ -25,7 +26,7 @@
     "chai-http": "*",
     "mocha": "*"
   }
-  "publishConfig":{
-    "registry": "https://npm.pkg.github.com"
-  }
+//  "publishConfig":{
+//    "registry": "https://npm.pkg.github.com"
+//  }
 }
