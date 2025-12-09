@@ -1,0 +1,31 @@
+name: Solar Sysem Workflow
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+        - main
+        - feature/*
+jobs:
+    kubectl-setup:
+        name: setup jon
+        runs-on: ubuntu-latest
+        steps:
+            - name: Install kubectl
+              uses: azure/setup-kubectl@v3
+              with:
+                version: v1.29.0
+
+            - name: Set up kubeconfig
+              run: |
+               mkdir -p $HOME/.kube
+               echo "${{ secrets.KUBECONFIG_B64 }}" | base64 -d > $HOME/.kube/config
+               chmod 600 $HOME/.kube/config
+
+            - name: Verify cluster access
+              run: kubectl get nodes
+
+
+
+
+
