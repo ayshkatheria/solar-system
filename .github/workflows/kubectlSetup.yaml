@@ -17,10 +17,10 @@ jobs:
                 version: v1.29.0
 
             - name: Set up kubeconfig
-              run: |
-               mkdir -p $HOME/.kube
-               echo "${{ secrets.KUBECONFIG_B64 }}" | base64 -d > $HOME/.kube/config
-               chmod 600 $HOME/.kube/config
+              uses: azure/k8s-set-context@v4
+              with:
+                 method: kubeconfig
+                 kubeconfig: ${{secrets.KUBECONFIG_B64}}
 
             - name: Verify cluster access
               run: kubectl get nodes
