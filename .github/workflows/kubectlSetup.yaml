@@ -32,7 +32,7 @@ jobs:
                  export KUBECONFIG=$GITHUB_WORKSPACE/gha-deployer.kubeconfig
              
                  kubectl version
-                 kubectl get nodes --no-headers || true
+                 kubectl get nodes
 
 
 
