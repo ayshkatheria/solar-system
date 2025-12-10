@@ -16,30 +16,23 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             
-             - name: Setup kubeconfig
-               run: |
-                 cat << 'EOF' > $KUBECONFIG
-                 ${{ secrets.K8S_KUBECONFIG }}
-                 EOF
-                 sed -i 's#https://controlplane:6443#https://127.0.0.1:6443#' $KUBECONFIG
-                 sed -i 's#https://172.31.35.167:6443#https://127.0.0.1:6443#' $KUBECONFIG || true
+              - name: Set up kubectl
+                uses: azure/setup-kubectl@v4
+                with:
+                 version: 'latest'
 
-             - name: Add SSH key
-               run: |
-                 mkdir -p ~/.ssh
-                 echo "${{ secrets.BASTION_SSH_KEY }}" > ~/.ssh/id_rsa
-                 chmod 600 ~/.ssh/id_rsa
-                 ssh-keyscan -H "${{ secrets.BASTION_HOST }}" >> ~/.ssh/known_hosts
-
-             - name: Start SSH tunnel to K8s API
-               run: |
-                  ssh -f -N \
-                  -o StrictHostKeyChecking=no \
-                  -L 6443:127.0.0.1:6443 \
-                  "${{ secrets.BASTION_USER }}@${{ secrets.BASTION_HOST }}"
-
-             - name: Verify cluster access
-               run: kubectl get nodes
+              - name: Write kubeconfig
+                env:
+                  KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}   # your secret
+                run: |
+                 echo "$KUBE_CONFIG_DATA" > $GITHUB_WORKSPACE/gha-deployer.kubeconfig
+               
+                 chmod 600 $GITHUB_WORKSPACE/gha-deployer.kubeconfig
+              
+                 export KUBECONFIG=$GITHUB_WORKSPACE/gha-deployer.kubeconfig
+             
+                 kubectl version --short
+                 kubectl get nodes --no-headers || true
 
 
 
