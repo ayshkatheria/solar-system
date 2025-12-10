@@ -1,0 +1,31 @@
+name: Using Kubeadm clusted hosted in local  without selfhost
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+        - main
+        - feature/*
+
+jobs:
+  deploy:
+    # Add the kubeconfig into secrets
+    runs-on: ubuntu-latest
+
+    steps:
+            - name: Checkout Repository
+              uses: actions/checkout@v4
+
+            - name: Install kubectl
+              uses: azure/setup-kubectl@v3
+              with:
+                version: v1.29.0
+
+            - name: Set up kubeconfig
+              uses: azure/k8s-set-context@v4
+              with:
+                 method: kubeconfig
+                 kubeconfig: ${{secrets.KUBECONFIG_B64}}
+
+            - name: Verify cluster access
+              run: kubectl get nodes

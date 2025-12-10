@@ -1,4 +1,4 @@
-name: Deploy to kubeadm cluster
+name: Using Kubeadm clusted hosted on ec2 with selfhost
 
 on:
   workflow_dispatch:
