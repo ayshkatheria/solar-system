@@ -10,6 +10,13 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
 
+# We can Pass the values in repo variables and feth here
+ # env:
+      # coming from Repository Variables (Settings → Secrets and variables → Actions → Variables)
+ #     NAMESPACE: ${{ vars.K8S_NAMESPACE }}
+ #      REPLICAS: ${{ vars.K8S_REPLICAS }}
+ #     IMAGE: ${{ vars.K8S_IMAGE_REPO }}:${{ github.sha }}
+
     env:
       NAMESPACE: development
       REPLICAS: 1
@@ -22,7 +29,7 @@ jobs:
 #      - name: Configure kubectl
 #        run: |
           # configure kubeconfig here (EKS/AKS/minikube etc.)
- #         echo "setup kubeconfig"
+#         echo "setup kubeconfig"
 
       - name: Replace placeholders in deployment.yaml
         run: |
@@ -34,6 +41,5 @@ jobs:
           cat kubernetes/development/deployment.yaml
 
 #      - name: Apply manifest
-#        run: |
- #         kubectl apply -f kubernetes/development/deployment.yaml
-
+#        run: |          
+#              kubectl apply -f kubernetes/development/deployment.yaml
