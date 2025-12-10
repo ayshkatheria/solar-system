@@ -1,1 +1,39 @@
+name: Replacing Placeholder in manifest file.
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+        - replacingPlaceholder
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      NAMESPACE: development
+      REPLICAS: 1
+      IMAGE: myrepo/solar-system:${{ github.sha }}
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+#      - name: Configure kubectl
+#        run: |
+          # configure kubeconfig here (EKS/AKS/minikube etc.)
+ #         echo "setup kubeconfig"
+
+      - name: Replace placeholders in deployment.yaml
+        run: |
+          sed -i "s#_{_NAMESPACE_}_#${NAMESPACE}#g" kubernetes/development/deployment.yaml
+          sed -i "s#_{_REPLICAS_}_#${REPLICAS}#g" kubernetes/development/deployment.yaml
+          sed -i "s#_{_IMAGE_}_#${IMAGE}#g" kubernetes/development/deployment.yaml
+
+          echo "===== Final manifest ====="
+          cat kubernetes/development/deployment.yaml
+
+#      - name: Apply manifest
+#        run: |
+ #         kubectl apply -f kubernetes/development/deployment.yaml
 
