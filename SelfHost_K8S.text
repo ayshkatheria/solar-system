@@ -1,1 +1,71 @@
+Steps To use kubeadm hosted on ec2 in github actions.
+
+1. Create and setup kubeadm on ec2.
+
+2. Now Create a dedicated runner user
+> sudo useradd -m -s /bin/bash github-runner || true
+> sudo passwd -l github-runner    # disables password login (recommended)
+
+3. Switch into the runner user:
+> sudo su - github-runner
+
+4. Create runner directory
+> mkdir ~/actions-runner
+> cd ~/actions-runner
+
+5. PART 2 — Install GitHub Self-Hosted Runner
+GitHub Repository → Settings → Actions → Runners → New self-hosted runner
+Note: GitHub gives you exact commands run in your ec2 github user
+
+6. After running those commands in ec2 , will check On GitHub:
+Settings → Actions → Runners → Online
+
+7. PART 3 — Provide Kubernetes Access to Runner
+   Your master node already has the admin kubeconfig:
+
+    > cat /etc/kubernetes/admin.conf
+    paste it github secrets.
+
+8. sudo cp /etc/kubernetes/admin.conf /home/github-runner/kubeconfig
+   sudo chown github-runner:github-runner /home/github-runner/kubeconfig
+
+9. Test it now :
+sudo su - github-runner
+export KUBECONFIG=$HOME/kubeconfig
+
+kubectl get nodes
+kubectl version
+
+10. PART 4 — Create GitHub Actions Workflow
+
+Create file:
+
+.github/workflows/deploy.yaml
+
+name: Deploy to kubeadm cluster
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  deploy:
+    runs-on: [self-hosted, aws-k8s]   # Or simply "self-hosted" if no custom label
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check cluster connectivity
+        run: |
+          export KUBECONFIG=$HOME/kubeconfig
+          kubectl version
+          kubectl get nodes
+
+      - name: Deploy manifests
+        run: |
+          export KUBECONFIG=$HOME/kubeconfig
+          kubectl apply -f k8s/    # adjust your folder path
+
+
 
