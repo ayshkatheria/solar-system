@@ -1,4 +1,4 @@
-name: Solar Sysem Workflow
+name: Deploy to kubeadm cluster
 
 on:
   workflow_dispatch:
@@ -7,32 +7,24 @@ on:
         - main
         - feature/*
 
-env:
-    KUBECONFIG: ${{ github.workspace }}/kubeconfig
-
 jobs:
-    kubectl-setup:
-        name: setup jon
-        runs-on: ubuntu-latest
-        steps:
-            
-              - name: Set up kubectl
-                uses: azure/setup-kubectl@v4
-                with:
-                 version: 'latest'
+  deploy:
+    # Use the self-hosted runner you just set up
+    # If you added a label like aws-k8s during config.sh, use:
+    # runs-on: [self-hosted, aws-k8s]
+    runs-on: self-hosted
 
-              - name: Write kubeconfig
-                env:
-                  KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}   # your secret
-                run: |
-                 echo "$KUBE_CONFIG_DATA" > $GITHUB_WORKSPACE/gha-deployer.kubeconfig
-               
-                 chmod 600 $GITHUB_WORKSPACE/gha-deployer.kubeconfig
-              
-                 export KUBECONFIG=$GITHUB_WORKSPACE/gha-deployer.kubeconfig
-             
-                 kubectl version
-                 kubectl get nodes
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check cluster connectivity
+        run: |
+          export KUBECONFIG=$HOME/kubeconfig
+          kubectl version
+          kubectl get nodes
+
+
 
 
 
