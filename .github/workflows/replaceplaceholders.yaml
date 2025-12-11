@@ -39,6 +39,17 @@ jobs:
 
           echo "===== Final manifest ====="
           cat kubernetes/development/deployment.yaml
+          
+#Create secrets Dynamically _______________________________________________
+
+      - name: Create MongoDB Secret
+        run: |
+          kubectl create secret generic mongo-db-creds \
+          -n $NAMESPACE \
+          --from-literal=MONGO_USERNAME='${{ secrets.MONGO_USERNAME }}' \
+          --from-literal=MONGO_PASSWORD='${{ secrets.MONGO_PASSWORD }}' \
+          --save-config --dry-run=client -o yaml | kubectl apply -f -
+
 
 #      - name: Apply manifest
 #        run: |          
