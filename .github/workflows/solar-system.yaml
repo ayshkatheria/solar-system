@@ -138,7 +138,7 @@ jobs:
           tags: |
              ${{vars.DOCKERHUB_USERNAME}}/solar-system:${{github.sha}}
              ghcr.io/${{github.repository_owner}}/solar-system:${{github.sha}}
-# Need to create a environment in the repo settings and configure protection rules for all the below 4 jobs.
+# Need to create an environment in the repo settings and configure protection rules for all the below 4 jobs.
   dev-deploy:
     name:
     runs-on: ubuntu-latest
